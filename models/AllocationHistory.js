@@ -1,37 +1,31 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
 
-const allocationHistorySchema = new mongoose.Schema(
-  {
+export const createAllocationHistoryModel = (sequelize) => {
+  const AllocationHistory = sequelize.define("AllocationHistory", {
     username: {
-      type: String,
-      required: true,
-      ref: "User", // Reference to User model
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    toolsAllocated: [
-      {
-        type: String,
-        required: true,
-        ref: "Tools", // Reference to Tools model
-      },
-    ],
+    toolsAllocated: {
+      type: DataTypes.ARRAY(DataTypes.STRING), 
+      allowNull: false,
+    },
     allocatedFrom: {
-      type: Date,
-      required: true,
+      type: DataTypes.DATE,
+      allowNull: false,
     },
     allocatedUpto: {
-      type: Date,
-      required: true,
+      type: DataTypes.DATE,
+      allowNull: false,
     },
     extendedUntil: {
-      type: Date, // This can be updated later if extended
+      type: DataTypes.DATE,
+      allowNull: true,
     },
-  },
-  { timestamps: true }
-);
+  }, {
+    timestamps: true,
+    tableName: "allocation_histories",
+  });
 
-const AllocationHistory = mongoose.model(
-  "AllocationHistory",
-  allocationHistorySchema
-);
-
-export default AllocationHistory;
+  return AllocationHistory;
+};

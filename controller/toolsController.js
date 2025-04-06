@@ -1,14 +1,14 @@
 import Tools from "../models/Tools.js";
 import userModel from "../models/userModel.js";
-import AllocationHistory from "../models/AllocationHistory.js";
-import moment from "moment"; // A library to handle dates
+import moment from "moment"; 
+import { allocationHistoryModel } from "../config/postgress.js";
 
 export const addToolsController = async (req, res) => {
   try {
     const fields = req.body;
     const { file } = req;
 
-    console.log(fields); // Log the fields to verify data
+    console.log(fields); 
 
     const tool = new Tools({ ...fields });
 
@@ -339,17 +339,20 @@ export const toolHandoverController = async (req, res) => {
 
 export const toolsAllocationHistoryController = async (req, res) => {
   try {
-    const history = await AllocationHistory.find().sort({ createdAt: -1 });
+    const history = await allocationHistoryModel.findAll({
+      order: [['createdAt', 'DESC']],
+    });
 
-    res.status(200).send({
+    res.status(200).json({
       success: true,
       history,
     });
   } catch (error) {
-    res.status(500).send({
+    res.status(500).json({
       success: false,
       message: "Error fetching history",
-      error,
+      error: error.message,
     });
   }
 };
+

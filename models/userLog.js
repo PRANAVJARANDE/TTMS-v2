@@ -1,18 +1,15 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
 
-const userLogSchema = new mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-  },
-  message: {
-    type: String,
-    required: true,
-  },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-});
+export const createUserLogModel = (sequelize) => {
+  const UserLog = sequelize.define("UserLog", {
+    message: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  }, {
+    timestamps: true,         
+    tableName: "user_logs",   
+  });
 
-const userLog = mongoose.model("userLog", userLogSchema);
-
-export default userLog;
+  return UserLog;
+};

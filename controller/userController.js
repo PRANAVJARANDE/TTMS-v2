@@ -1,16 +1,18 @@
-import userModel from "../models/userModel.js";
+import { userModel } from "../config/postgress.js"; 
 
 export const getUsersController = async (req, res) => {
   try {
-    const user = await userModel.find({ role: "user" });
-    //console.log(user);
+    const users = await userModel.findAll({
+      where: { role: "user" },
+    });
+
     res.status(200).send({
       success: true,
-      message: "All user",
-      user,
+      message: "All users",
+      user: users,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).send({
       success: false,
       message: "Error in getting users",

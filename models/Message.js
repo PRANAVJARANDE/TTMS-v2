@@ -1,19 +1,46 @@
-import mongoose,{Schema}  from "mongoose";
+import { DataTypes } from "sequelize";
 
-const messageSchema = new Schema({
+export const createMessageModel = (sequelize) => {
+  const Message = sequelize.define("Message", {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+    },
     content: {
-        type: String,
-        required: true
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    owner: {
-        type: Schema.Types.ObjectId,
-        ref: "User"
+    ownerId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
-    replyOf: {
-        type: Schema.Types.ObjectId,
-        ref: "Message"
-    }
-}, {timestamps: true})
+    replyOfId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
+  }, {
+    timestamps: true,
+    tableName: "messages",
+  });
 
+  Message.associate = (models) => {
+    Message.belongsTo(models.User, {
+      foreignKey: "ownerId",
+      as: "Owner",
+    });
 
-export const Message = mongoose.model("Message", messageSchema)
+    // Self-association
+    Message.belongsTo(models.Message, {
+      foreignKey: "replyOfId",
+      as: "RepliedMessage",
+    });
+
+    Message.hasMany(models.Message, {
+      foreignKey: "replyOfId",
+      as: "Replies",
+    });
+  };
+
+  return Message;
+};

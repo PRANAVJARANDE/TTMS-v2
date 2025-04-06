@@ -1,5 +1,5 @@
 import JWT from "jsonwebtoken";
-import userModel from "../models/userModel.js";
+import { sequelize } from "../config/postgress.js";
 
 export const requireSignIn = async (req, res, next) => {
   try {
@@ -28,9 +28,12 @@ export const requireSignIn = async (req, res, next) => {
 
 export const isAdmin = async (req, res, next) => {
   try {
-    const user = await userModel.findById(req.body.userID);
-    if (user?.role === "admin") next();
-    else {
+    const userID = req.body.userID;
+    const [results] = await sequelize.query(`SELECT * FROM users WHERE id = ${userID}`);
+    const user = results[0];
+    if (user?.role === "admin") { 
+      next();
+    } else {
       return res.status(401).send({
         success: false,
         message: "Unauthorised Access for Admin",
@@ -48,7 +51,9 @@ export const isAdmin = async (req, res, next) => {
 
 export const isSupervisor = async (req, res, next) => {
   try {
-    const user = await userModel.findById(req.body.userID);
+    const userID = req.body.userID;
+    const [results] = await sequelize.query(`SELECT * FROM users WHERE id = ${userID}`);
+    const user = results[0];
     if (user?.role === "supervisor") next();
     else {
       return res.status(401).send({
@@ -68,7 +73,9 @@ export const isSupervisor = async (req, res, next) => {
 
 export const isUser = async (req, res, next) => {
   try {
-    const user = await userModel.findById(req.body.userID);
+    const userID = req.body.userID;
+    const [results] = await sequelize.query(`SELECT * FROM users WHERE id = ${userID}`);
+    const user = results[0];
     if (user?.role === "user") next();
     else {
       return res.status(401).send({

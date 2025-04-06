@@ -11,11 +11,14 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import logsRoutes from "./routes/logsRoutes.js";
 import chatRoutes from './routes/chatRoutes.js'
+import { connectionToPostgress } from "./config/postgress.js";
 
 dotenv.config();
 const app = express();
 
 connectDB();
+connectionToPostgress();
+
 
 app.use(cors());
 app.use(express.json());

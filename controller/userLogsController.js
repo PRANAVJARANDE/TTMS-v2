@@ -1,9 +1,9 @@
-import userLog from "../models/userLog.js";
+import { userLogModel } from "../config/postgress.js"; 
 
 export const logsController = async (req, res) => {
   try {
-    const log = new userLog(req.body);
-    log.save();
+    const {message}=req.body;
+    const log = await userLogModel.create({message});
     res.status(200).send({
       success: true,
       message: "Logs saved successfully",
@@ -20,7 +20,9 @@ export const logsController = async (req, res) => {
 
 export const readLogsController = async (req, res) => {
   try {
-    const allLogs = await userLog.find().sort({ createdAt: -1 }); 
+    const allLogs = await userLogModel.findAll({
+      order: [["createdAt", "DESC"]],
+    });
     res.status(200).send({
       success: true,
       message: "Logs Received",

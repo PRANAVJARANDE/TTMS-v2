@@ -1,3 +1,101 @@
+import { DataTypes } from "sequelize";
+
+export const createToolModel = (sequelize) => {
+  const Tool = sequelize.define("Tool", {
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    modelNumber: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    serialNumber: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    qrcode: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    manufacturer: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    location: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.STRING,
+      defaultValue: "New Device",
+    },
+    purchaseDate: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    calliberationDate: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    nextCalliberationDate: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    allocatedTo: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    allocatedFrom: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    allocatedUpto: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    photoData: {
+      type: DataTypes.BLOB("long"),
+      allowNull: true,
+    },
+    photoContentType: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+  }, {
+    timestamps: true,
+    tableName: "tools",
+  });
+
+  Tool.beforeCreate((tool) => {
+    if (!tool.calliberationDate) {
+      tool.calliberationDate = tool.purchaseDate;
+    }
+
+    if (!tool.nextCalliberationDate) {
+      const [day, month, year] = tool.calliberationDate.split("-");
+      const calliberationDate = new Date(`${year}-${month}-${day}`);
+      const nextCaliberationDate = new Date(calliberationDate);
+      nextCaliberationDate.setDate(calliberationDate.getDate() + 10);
+
+      const nextDay = String(nextCaliberationDate.getDate()).padStart(2, "0");
+      const nextMonth = String(nextCaliberationDate.getMonth() + 1).padStart(2, "0");
+      const nextYear = nextCaliberationDate.getFullYear();
+
+      tool.nextCalliberationDate = `${nextDay}-${nextMonth}-${nextYear}`;
+    }
+  });
+
+  return Tool;
+};
+
+
+
 import mongoose from "mongoose";
 
 const tools = new mongoose.Schema(
